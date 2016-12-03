@@ -178,6 +178,10 @@ namespace 每日必应
             }
         }
 
-        
+        private void OpenDownloadDir_Click(object sender, RoutedEventArgs e)
+        {
+            string path = Directory.GetCurrentDirectory() + "\\BingDownload";
+            System.Diagnostics.Process.Start(@"C:\Windows\explorer.exe", path);
+        }
     }
 }
