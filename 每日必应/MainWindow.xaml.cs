@@ -93,7 +93,7 @@ namespace 每日必应
 
             #region 替换为Lambda方法语法
             //var query = from s in files
-            //            where s.Extension == ".jpg"
+            //            where s.Extension == ".bmp"
             //            select s;
             //foreach (var item in query)
             //{
@@ -110,7 +110,7 @@ namespace 每日必应
 
             await Task.Factory.StartNew(() =>
             {
-                files.Where(p => p.Extension == ".jpg").AsParallel().ForAll(p =>
+                files.Where(p => p.Extension == ".bmp").AsParallel().ForAll(p =>
                 {
                     try
                     {

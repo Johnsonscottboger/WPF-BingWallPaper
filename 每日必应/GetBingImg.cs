@@ -99,6 +99,10 @@ namespace 每日必应
             return url.Split('/').AsParallel().Where(p => p.Contains(".jpg")).FirstOrDefault();
         }
 
+        /// <summary>
+        /// 获取图片路径
+        /// </summary>
+        /// <returns></returns>
         public string GetImgPath()
         {
             var path = bingDownloadDir + "\\" + imgPath;
@@ -120,7 +124,7 @@ namespace 每日必应
             string path = getImg.GetImgPath();
             var success = SystemParametersInfo(20, 0, path, 0x01 | 0x02);
             if (!success)
-                throw new Exception("设置失败，在Windows 10 系统中使用");
+                throw new Exception("设置失败，请在 Windows 10 系统中使用");
         }
     }
 }
