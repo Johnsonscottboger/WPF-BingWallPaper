@@ -1,10 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -19,7 +15,7 @@ namespace 每日必应
         private Image result;
         private static int day = -1;
         private static readonly GetImg getImg = new GetImg();
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,7 +25,9 @@ namespace 每日必应
         {
             try
             {
-                await GetImageByDay(day);
+                this.Title = "每日必应 | 正在加载......";
+                
+                await GetImageByDay(day, 10000);
             }
             catch (Exception ex)
             {
@@ -47,7 +45,15 @@ namespace 每日必应
         /// <param name="e"></param>
         private async void SetWallpaper_Click(object sender, RoutedEventArgs e)
         {
-            await Task.Factory.StartNew(()=> GetImg.SetWallpaper(getImg));
+            try
+            {
+                await Task.Factory.StartNew(() => GetImg.SetWallpaper(getImg));
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private async void left_Click(object sender, RoutedEventArgs e)
@@ -55,7 +61,7 @@ namespace 每日必应
             day += 1;
             try
             {
-                await GetImageByDay(day);
+                await GetImageByDay(day, 10000);
             }
             catch (Exception ex)
             {
@@ -69,7 +75,7 @@ namespace 每日必应
             day -= 1;
             try
             {
-                await GetImageByDay(day);
+                await GetImageByDay(day, 10000);
             }
             catch (Exception ex)
             {
@@ -112,7 +118,7 @@ namespace 每日必应
                     }
                     catch (Exception)
                     {
-                        
+
                     }
                 });
             });
@@ -122,24 +128,33 @@ namespace 每日必应
         /// 通过天获取图片
         /// </summary>
         /// <param name="day">天数</param>
-        private async Task GetImageByDay(int day)
+        private async Task GetImageByDay(int day, int timeout)
         {
             try
             {
-                result = await getImg.GetBingImgUri(day);
+                var getBingImgUriTask= getImg.GetBingImgUri(day);
+                if (getBingImgUriTask == await Task.WhenAny(getBingImgUriTask, Task.Delay(timeout)))
+                {
+                    result = await getBingImgUriTask;
+                }
+                else
+                {
+                    this.Title = "每日必应 | 网络连接超时";
+                    throw new TimeoutException("网络连接超时");
+                }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }
-            string path = getImg.bingDownloadDir + "\\" + getImg.imgPath;
+            string path = getImg.GetImgPath();
             try
             {
                 this.SetWallpaper.ToolTip = result.copyright;
                 this.Title = "每日必应 | " + result.copyright;
                 ShowImage.Source = new BitmapImage(new Uri(path));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw ex;
             }

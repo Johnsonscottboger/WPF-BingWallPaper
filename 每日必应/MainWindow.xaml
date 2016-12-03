@@ -20,7 +20,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image x:Name="ShowImage" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="3" 
-               Stretch="UniformToFill" Source="D:\OneDrive\C#Develop\每日必应\每日必应\bin\Debug\BingDownload\Quinoa_ZH-CN9445647519_1920x1080.jpg"
+               Stretch="UniformToFill"
                >
         </Image>
         

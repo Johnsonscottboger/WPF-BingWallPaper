@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace 每日必应
@@ -82,8 +81,7 @@ namespace 每日必应
                 {
                     await Task.Factory.StartNew(()=> Directory.CreateDirectory(bingDownloadDir).Attributes = FileAttributes.Hidden);
                 }
-                string path = bingDownloadDir+"\\"  + imgPath;
-
+                string path = GetImgPath();
                 if (!File.Exists(path))
                 {
                     await webClient.DownloadFileTaskAsync(bingObj.images[0].url, path);
@@ -101,6 +99,12 @@ namespace 每日必应
             return url.Split('/').AsParallel().Where(p => p.Contains(".jpg")).FirstOrDefault();
         }
 
+        public string GetImgPath()
+        {
+            var path = bingDownloadDir + "\\" + imgPath;
+            return path = path.Replace(".jpg", ".bmp");
+        }
+
         /// <summary>
         /// 设为壁纸
         /// </summary>
@@ -109,12 +113,14 @@ namespace 每日必应
         /// <param name="lpvParm"></param>
         /// <param name="fuWinIni"></param>
         /// <returns></returns>
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll",EntryPoint = "SystemParametersInfo")]
         private static extern bool SystemParametersInfo(int uAction, int uParam, string lpvParm, int fuWinIni);
         public static void SetWallpaper(GetImg getImg)
         {
-            string path = getImg.bingDownloadDir + "\\" + getImg.imgPath;
-            SystemParametersInfo(20, 0, path, 0x01 | 0x02);
+            string path = getImg.GetImgPath();
+            var success = SystemParametersInfo(20, 0, path, 0x01 | 0x02);
+            if (!success)
+                throw new Exception("设置失败，在Windows 10 系统中使用");
         }
     }
 }
