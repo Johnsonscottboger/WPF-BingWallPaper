@@ -1,19 +1,13 @@
-﻿using Microsoft.Win32;
+﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace 每日必应
 {
@@ -22,78 +16,132 @@ namespace 每日必应
     /// </summary>
     public partial class MainWindow : Window
     {
-        string source { get; set; }
-        int day { get; set; }
-
+        private Image result;
+        private static int day = -1;
+        private static readonly GetImg getImg = new GetImg();
+        
         public MainWindow()
         {
             InitializeComponent();
-
-            day = -1;
-
-            source = EverydayBingWallpaper.GetBingwallpaper(day);
-
-            if(source== "日期不合法或超出范围")
-            {
-                MessageBox.Show(source);
-                return;
-            }
-
-            ShowImage.Source = new BitmapImage(new Uri(source));
-
         }
-        private void SetWallpaper_Click(object sender, RoutedEventArgs e)
+
+        private async void Window_SourceInitialized(object sender, EventArgs e)
         {
-            EverydayBingWallpaper.SetWallpaper(source);
+            try
+            {
+                await GetImageByDay(day);
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException != null)
+                    MessageBox.Show(ex.InnerException.Message);
+                else
+                    MessageBox.Show(ex.Message);
+            }
         }
 
-        private void left_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// 设置为壁纸
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void SetWallpaper_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Factory.StartNew(()=> GetImg.SetWallpaper(getImg));
+        }
+
+        private async void left_Click(object sender, RoutedEventArgs e)
         {
             day += 1;
-            source = EverydayBingWallpaper.GetBingwallpaper(day);
-            if (source == "日期不合法或超出范围")
+            try
             {
-                MessageBox.Show(source);
-                return;
+                await GetImageByDay(day);
             }
-
-            ShowImage.Source = new BitmapImage(new Uri(source));
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                day -= 1;
+            }
         }
 
-        private void right_Click(object sender, RoutedEventArgs e)
+        private async void right_Click(object sender, RoutedEventArgs e)
         {
             day -= 1;
-            source = EverydayBingWallpaper.GetBingwallpaper(day);
-            if (source == "日期不合法或超出范围")
+            try
             {
-                MessageBox.Show(source);
-                return;
+                await GetImageByDay(day);
             }
-
-            ShowImage.Source = new BitmapImage(new Uri(source));
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                day += 1;   //回滚
+            }
         }
 
-        private void Window_Closed(object sender, EventArgs e)
+        private async void Window_Closed(object sender, EventArgs e)
         {
-            
             //删除下载的图片
-            string path = Directory.GetCurrentDirectory();
+            string path = getImg.bingDownloadDir;
             DirectoryInfo dir = new DirectoryInfo(path);
             FileInfo[] files = dir.GetFiles();
 
-            var query = from s in files
-                        where s.Extension == ".jpg"
-                        select s;
-            foreach(var item in query)
+            #region 替换为Lambda方法语法
+            //var query = from s in files
+            //            where s.Extension == ".jpg"
+            //            select s;
+            //foreach (var item in query)
+            //{
+            //    try
+            //    {
+            //        item.Delete();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        continue;
+            //    }
+            //}
+            #endregion
+
+            await Task.Factory.StartNew(() =>
             {
-                try
+                files.Where(p => p.Extension == ".jpg").AsParallel().ForAll(p =>
                 {
-                    File.Delete(item.Name);
-                }
-                catch(Exception ex)
-                {
-                    continue;
-                }
+                    try
+                    {
+                        p.Delete();
+                    }
+                    catch (Exception)
+                    {
+                        
+                    }
+                });
+            });
+        }
+
+        /// <summary>
+        /// 通过天获取图片
+        /// </summary>
+        /// <param name="day">天数</param>
+        private async Task GetImageByDay(int day)
+        {
+            try
+            {
+                result = await getImg.GetBingImgUri(day);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+            string path = getImg.bingDownloadDir + "\\" + getImg.imgPath;
+            try
+            {
+                this.SetWallpaper.ToolTip = result.copyright;
+                this.Title = "每日必应 | " + result.copyright;
+                ShowImage.Source = new BitmapImage(new Uri(path));
+            }
+            catch(Exception ex)
+            {
+                throw ex;
             }
         }
     }

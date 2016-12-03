@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:每日必应"
         mc:Ignorable="d"
-        Title="每日必应" MinHeight="400" MinWidth="600" MaxHeight="600" MaxWidth="800" Closed="Window_Closed">
+        Title="每日必应" MinHeight="400" MinWidth="600" MaxHeight="600" MaxWidth="800"  Closing="Window_Closed" SourceInitialized="Window_SourceInitialized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -20,16 +20,19 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image x:Name="ShowImage" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Grid.RowSpan="3" 
-               Stretch="UniformToFill"
-               />
+               Stretch="UniformToFill" Source="D:\OneDrive\C#Develop\每日必应\每日必应\bin\Debug\BingDownload\Quinoa_ZH-CN9445647519_1920x1080.jpg"
+               >
+        </Image>
+        
         <Button x:Name="SetWallpaper" Content="设置为背景"
                 Grid.Row="2" Grid.Column="2" Margin="40,50"
-                Click="SetWallpaper_Click" Opacity="0.5" BorderThickness="0"/>
-        <Button x:Name="left" Content="前一天"
-                Grid.Column="1" Grid.Row="3" Margin="60,60" 
-                Click="left_Click" Opacity="0.5" BorderThickness="0" BorderBrush="Red"/>
-        <Button x:Name="right" Content="后一天"
-                Grid.Column="3" Grid.Row="3" Margin="60,60"
-                Click="right_Click" Opacity="0.5" BorderThickness="0"/>
+                Click="SetWallpaper_Click" Opacity="0.4" BorderThickness="0" FontFamily="Yu Gothic UI Semilight" ToolTip="设置为背景" RenderTransformOrigin="0.5,0.5" MinWidth="40" MinHeight="40" IsDefault="True"
+                />
+        <Button x:Name="left" Content="《"
+                Grid.Column="1" Grid.Row="3" Margin="60,60" ToolTip="前一天"
+                Click="left_Click" Opacity="0.4" BorderThickness="0"/>
+        <Button x:Name="right" Content="》"
+                Grid.Column="3" Grid.Row="3" Margin="60,60" ToolTip="后一天"
+                Click="right_Click" Opacity="0.4" BorderThickness="0"/>
     </Grid>
 </Window>
