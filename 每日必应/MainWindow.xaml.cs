@@ -84,6 +84,22 @@ namespace 每日必应
             }
         }
 
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if(e.Key==System.Windows.Input.Key.Left)
+            {
+                left_Click(sender, null);
+            }
+            else if (e.Key == System.Windows.Input.Key.Right)
+            {
+                right_Click(sender, null);
+            }
+            else if (e.Key == System.Windows.Input.Key.Enter)
+            {
+                SetWallpaper_Click(sender, null);
+            }
+        }
+
         private async void Window_Closed(object sender, EventArgs e)
         {
             //删除下载的图片
@@ -124,6 +140,8 @@ namespace 每日必应
             });
         }
 
+
+
         /// <summary>
         /// 通过天获取图片
         /// </summary>
@@ -159,5 +177,7 @@ namespace 每日必应
                 throw ex;
             }
         }
+
+        
     }
 }
