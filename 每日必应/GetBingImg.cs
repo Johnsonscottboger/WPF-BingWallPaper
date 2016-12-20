@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace 每日必应 {
     public class GetImg {
         public readonly string bingDownloadDir = Directory.GetCurrentDirectory() + "\\BingDownload";
+        private readonly string hostName = "http://cn.bing.com";
         private readonly string imgBaseApi = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx={0}&n=1&nc=1480678894463&pid=hp&scope=web&FORM=HDRSC1&video=1";
 
         BingImage _bingImage;
@@ -23,7 +24,7 @@ namespace 每日必应 {
             var bingObj = await GetBingObjectDeserialJsonAsync(json);
             if(bingObj == null)
                 throw new Exception("反序列化Json时出现异常");
-            var imgBytes = await GetBingImgBytesAsync(bingObj.images[0].url);
+            var imgBytes = await GetBingImgBytesAsync(hostName + bingObj.images[0].url);
             if(imgBytes == null || imgBytes.Length == 0)
                 throw new Exception("加载图片失败");
 
@@ -162,6 +163,7 @@ namespace 每日必应 {
         public string GetImgName(string url) {
             return url.Split('/').AsParallel().Where(p => p.Contains(".jpg")).FirstOrDefault();
         }
+        
         #endregion
     }
 

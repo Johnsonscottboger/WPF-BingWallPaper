@@ -19,6 +19,8 @@ namespace 每日必应 {
         public MainWindow() {
             getImg = new GetImg();
             InitializeComponent();
+
+            
         }
 
         /// <summary>
@@ -114,7 +116,7 @@ namespace 每日必应 {
             #endregion
 
             await Task.Factory.StartNew(() => {
-                files.Where(p => p.Extension == ".bmp").ToList().ForEach(p => {
+                files.Where(p => p.Extension == ".jpg").ToList().ForEach(p => {
                     try {
                         p.Delete();
                     }
@@ -130,7 +132,8 @@ namespace 每日必应 {
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OpenDownloadDir_Click(object sender,RoutedEventArgs e) {
+        private void OpenDownloadDir_Click(object sender,RoutedEventArgs e)
+        {
             string path = getImg.bingDownloadDir;
             System.Diagnostics.Process.Start(@"C:\Windows\explorer.exe",path);
         }

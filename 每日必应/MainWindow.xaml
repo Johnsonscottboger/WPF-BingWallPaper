@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:每日必应"
         mc:Ignorable="d"
-        Title="每日必应" MinHeight="400" MinWidth="600" Width="768" Height="535"
+        Title="每日必应" MinHeight="400" MinWidth="600" Width="768" Height="495"
         Closing="Window_Closed" SourceInitialized="Window_SourceInitialized"
-        KeyUp="Window_KeyUp">
+        KeyUp="Window_KeyUp"
+        >
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -29,10 +30,8 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image x:Name="ShowImage" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Grid.RowSpan="8" 
-               Stretch="UniformToFill"
-               >
-        </Image>
+        <Image x:Name="ShowImage" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Grid.RowSpan="8"
+               Stretch="UniformToFill"/>
         <Grid Grid.Column="3" Grid.Row="6" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition/>
