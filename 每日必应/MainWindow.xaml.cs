@@ -16,12 +16,18 @@ namespace 每日必应 {
         private static int day = -1;
         private readonly GetImg getImg;
         private BingImage result;
+        private string TitleFormat;
 
         public MainWindow() {
             getImg = new GetImg();
             InitializeComponent();
-
-            
+            if(IsAdmin())
+            {
+                TitleFormat = "每日必应（管理员）| {0}";
+            }else
+            {
+                TitleFormat = "每日必应 | {0}";
+            }
         }
 
         /// <summary>
@@ -31,8 +37,16 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private async void Window_SourceInitialized(object sender,EventArgs e) {
             try {
-                this.Title = "每日必应 | 正在加载......";
+                this.Title = string.Format(TitleFormat,"正在加载......");
                 await GetImageByDay(day,10000);
+                if(IsAdmin())
+                {
+                    SetAutoRun_Click(sender,null);
+                    if(IsAutoRun())
+                        this.SetAutoRun.Content = "取消开机自启";
+                    else
+                        this.SetAutoRun.Content = "设置开机自启";
+                }
             }
             catch(Exception ex) {
                 if(ex.InnerException != null)
@@ -139,6 +153,11 @@ namespace 每日必应 {
             System.Diagnostics.Process.Start(@"C:\Windows\explorer.exe",path);
         }
 
+        /// <summary>
+        /// 快捷键
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_KeyUp(object sender,System.Windows.Input.KeyEventArgs e) {
             if(e.Key == System.Windows.Input.Key.Left) {
                 left_Click(sender,null);
@@ -166,11 +185,11 @@ namespace 每日必应 {
                     result = await getBingImgUriTask;
                 }
                 else {
-                    this.Title = "每日必应 | 网络连接超时";
+                    this.Title = string.Format(TitleFormat,"网络连接超时");
                     throw new TimeoutException("网络连接超时");
                 }
                 this.SetWallpaper.ToolTip = result.Corpyright;
-                this.Title = "每日必应 | " + result.Corpyright;
+                this.Title = string.Format(TitleFormat,result.Corpyright);
                 var bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
                 bitmapImage.StreamSource = new MemoryStream(result.Bytes);
@@ -189,8 +208,12 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private void SetAutoRun_Click(Object sender,RoutedEventArgs e)
         {
-            RestartAsAdmin();
-            AutoRunMethod(AutoRun.Open);
+            MessageBox.Show("触发“设置开机自启”事件");
+            if(!IsAdmin())
+            {
+                RestartAsAdmin();
+            }
+            AutoRunMethod(AutoRun.Toggle);
         }
 
         #region 设置开机自启
@@ -205,14 +228,37 @@ namespace 每日必应 {
             try
             {
                 var registryName = "AutoRun_EveryDayBing";
-                if(autoRun == AutoRun.Open)
+                switch(autoRun)
                 {
-                    run.SetValue(registryName,startupPath);
+                    case AutoRun.Open:
+                    {
+                        run.SetValue(registryName,startupPath);
+                        break;
+                    }
+                    case AutoRun.Close:
+                    {
+                        run.DeleteValue(registryName,false);
+                        break;
+                    }
+                    case AutoRun.Toggle:
+                    {
+                        if(IsAutoRun())
+                        {
+                            run.SetValue(registryName,startupPath);
+                        }
+                        else
+                        {
+                            run.DeleteValue(registryName,false);
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        run.DeleteValue(registryName,false);
+                        break;
+                    }
                 }
-                else
-                {
-                    run.DeleteValue(registryName,false);
-                }
+
                 local.Close();
                 MessageBox.Show("设置成功");
             }
@@ -222,25 +268,40 @@ namespace 每日必应 {
             }
         }
 
+        /// <summary>
+        /// 是否为开机启动
+        /// </summary>
+        /// <returns></returns>
+        private bool IsAutoRun()
+        {
+            var startupPath = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
+            Microsoft.Win32.RegistryKey local = Microsoft.Win32.Registry.LocalMachine;
+            Microsoft.Win32.RegistryKey run = local.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            var registryName = "AutoRun_EveryDayBing";
+            return run.GetValue(registryName) != null;
+        }
+
         private enum AutoRun
         {
-            Open,Close
+            Open,Close,Toggle
         }
         #endregion
 
         #region 以管理员身份重启程序
+
+        /// <summary>
+        /// 以管理员身份重启程序
+        /// </summary>
         public void RestartAsAdmin()
         {
             var processStartInfo = new System.Diagnostics.ProcessStartInfo();
             processStartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
             processStartInfo.Verb = "runas";
             //判断是否已经为管理员身份运行
-
-
             try
             {
                 System.Diagnostics.Process.Start(processStartInfo);
-                //Environment.Exit(0);
+                Environment.Exit(0);
             }
             catch(Exception ex)
             {
@@ -261,7 +322,7 @@ namespace 每日必应 {
                 WindowsPrincipal principal = new WindowsPrincipal(identity);
                 isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
-            catch(Exception ex)
+            catch
             {
                 isAdmin = false;
             }
