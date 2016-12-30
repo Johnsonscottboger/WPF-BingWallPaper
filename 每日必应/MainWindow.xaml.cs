@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -180,5 +181,92 @@ namespace 每日必应 {
                 throw ex;
             }
         }
+
+        /// <summary>
+        /// 设置开机自启
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SetAutoRun_Click(Object sender,RoutedEventArgs e)
+        {
+            RestartAsAdmin();
+            AutoRunMethod(AutoRun.Open);
+        }
+
+        #region 设置开机自启
+        /// <summary>
+        /// 设置自动启动
+        /// </summary>
+        private void AutoRunMethod(AutoRun autoRun)
+        {
+            var startupPath = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
+            Microsoft.Win32.RegistryKey local = Microsoft.Win32.Registry.LocalMachine;
+            Microsoft.Win32.RegistryKey run = local.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            try
+            {
+                var registryName = "AutoRun_EveryDayBing";
+                if(autoRun == AutoRun.Open)
+                {
+                    run.SetValue(registryName,startupPath);
+                }
+                else
+                {
+                    run.DeleteValue(registryName,false);
+                }
+                local.Close();
+                MessageBox.Show("设置成功");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("设置失败：\n" + ex.Message);
+            }
+        }
+
+        private enum AutoRun
+        {
+            Open,Close
+        }
+        #endregion
+
+        #region 以管理员身份重启程序
+        public void RestartAsAdmin()
+        {
+            var processStartInfo = new System.Diagnostics.ProcessStartInfo();
+            processStartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
+            processStartInfo.Verb = "runas";
+            //判断是否已经为管理员身份运行
+
+
+            try
+            {
+                System.Diagnostics.Process.Start(processStartInfo);
+                //Environment.Exit(0);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("以管理员重启失败：\n" + ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// 是否已经为管理员身份运行
+        /// </summary>
+        /// <returns></returns>
+        private bool IsAdmin()
+        {
+            bool isAdmin = false;
+            try
+            {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(identity);
+                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch(Exception ex)
+            {
+                isAdmin = false;
+            }
+            return isAdmin;
+        }
+        #endregion
     }
 }

@@ -87,5 +87,9 @@
                 Grid.Column="1" Grid.Row="1" ToolTip="后一天"
                 Click="right_Click" Opacity="0.5" BorderThickness="0"/>
         </Grid>
+        <Button x:Name="SetAutoRun" Content="开机自启" Opacity="0.5" Margin="20"
+                Grid.Column="7" Grid.Row="8" ToolTip="设置开机自动启动"
+                Click="SetAutoRun_Click"
+                />
     </Grid>
 </Window>
