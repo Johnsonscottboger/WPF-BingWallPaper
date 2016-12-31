@@ -37,19 +37,30 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
             <TextBlock Text="设置为背景"
-                        Grid.Row="0" Margin="20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Yu Gothic UI Semibold">
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Yu Gothic UI Semibold">
             </TextBlock>
             <Button x:Name="SetWallpaper" Content="设置为背景"
-                    Grid.Row="0" Margin="20,0"
+                    Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,0"
                     Click="SetWallpaper_Click" Opacity="0.5" BorderThickness="0" FontFamily="Yu Gothic UI Semilight" ToolTip="设置为背景" IsDefault="True"
                 />
             <TextBlock Text="位置"
-                        Grid.Row="1" Margin="20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Yu Gothic UI Semibold">
+                        Grid.Row="1" Margin="20,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Yu Gothic UI Semibold">
             </TextBlock>
             <Button x:Name="OpenDownloadDir" Content="位置"
-                Grid.Row="1" Margin="20,0" ToolTip="打开下载位置"
+                Grid.Row="1" Margin="20,0,0,0" ToolTip="打开下载位置"
                 Click="OpenDownloadDir_Click" Opacity="0.5" BorderThickness="0" FontFamily="Yu Gothic UI Semilight"/>
+            
+            <TextBlock Text="设置"
+                        Grid.Row="1" Grid.Column="1" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="Yu Gothic UI Semibold">
+            </TextBlock>
+            <Button x:Name="SetAutoRun" Content="设置"
+                Grid.Row="1" Grid.Column="1" Margin="0,0,20,0" ToolTip="设置"
+                Click="SetAutoRun_Click" Opacity="0.5" BorderThickness="0" FontFamily="Yu Gothic UI Semilight"/>
         </Grid>
         <Grid Grid.Column="2" Grid.Row="6">
             <Grid.RowDefinitions>
@@ -87,9 +98,6 @@
                 Grid.Column="1" Grid.Row="1" ToolTip="后一天"
                 Click="right_Click" Opacity="0.5" BorderThickness="0"/>
         </Grid>
-        <Button x:Name="SetAutoRun" Content="开机自启" Opacity="0.5" Margin="20"
-                Grid.Column="7" Grid.Row="8" ToolTip="设置开机自动启动"
-                Click="SetAutoRun_Click"
-                />
+        
     </Grid>
 </Window>

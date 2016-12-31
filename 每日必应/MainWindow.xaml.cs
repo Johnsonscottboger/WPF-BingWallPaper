@@ -17,17 +17,11 @@ namespace 每日必应 {
         private readonly GetImg getImg;
         private BingImage result;
         private string TitleFormat;
+        private Settings settings;
 
         public MainWindow() {
             getImg = new GetImg();
             InitializeComponent();
-            if(IsAdmin())
-            {
-                TitleFormat = "每日必应（管理员）| {0}";
-            }else
-            {
-                TitleFormat = "每日必应 | {0}";
-            }
         }
 
         /// <summary>
@@ -37,16 +31,20 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private async void Window_SourceInitialized(object sender,EventArgs e) {
             try {
-                this.Title = string.Format(TitleFormat,"正在加载......");
-                await GetImageByDay(day,10000);
                 if(IsAdmin())
                 {
-                    SetAutoRun_Click(sender,null);
-                    if(IsAutoRun())
-                        this.SetAutoRun.Content = "取消开机自启";
-                    else
-                        this.SetAutoRun.Content = "设置开机自启";
+                    TitleFormat = "每日必应（管理员）| {0}";
+                    settings = new Settings();
+                    settings.ShowDialog();
+                    settings.Focus();
                 }
+                else
+                {
+                    TitleFormat = "每日必应 | {0}";
+                }
+
+                this.Title = string.Format(TitleFormat,"正在加载......");
+                await GetImageByDay(day,10000);
             }
             catch(Exception ex) {
                 if(ex.InnerException != null)
@@ -208,84 +206,17 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private void SetAutoRun_Click(Object sender,RoutedEventArgs e)
         {
-            MessageBox.Show("触发“设置开机自启”事件");
             if(!IsAdmin())
             {
                 RestartAsAdmin();
             }
-            AutoRunMethod(AutoRun.Toggle);
+
+            if(settings==null)
+                settings = new Settings();
+            settings.ShowDialog();
         }
 
-        #region 设置开机自启
-        /// <summary>
-        /// 设置自动启动
-        /// </summary>
-        private void AutoRunMethod(AutoRun autoRun)
-        {
-            var startupPath = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
-            Microsoft.Win32.RegistryKey local = Microsoft.Win32.Registry.LocalMachine;
-            Microsoft.Win32.RegistryKey run = local.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-            try
-            {
-                var registryName = "AutoRun_EveryDayBing";
-                switch(autoRun)
-                {
-                    case AutoRun.Open:
-                    {
-                        run.SetValue(registryName,startupPath);
-                        break;
-                    }
-                    case AutoRun.Close:
-                    {
-                        run.DeleteValue(registryName,false);
-                        break;
-                    }
-                    case AutoRun.Toggle:
-                    {
-                        if(IsAutoRun())
-                        {
-                            run.SetValue(registryName,startupPath);
-                        }
-                        else
-                        {
-                            run.DeleteValue(registryName,false);
-                        }
-                        break;
-                    }
-                    default:
-                    {
-                        run.DeleteValue(registryName,false);
-                        break;
-                    }
-                }
-
-                local.Close();
-                MessageBox.Show("设置成功");
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("设置失败：\n" + ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// 是否为开机启动
-        /// </summary>
-        /// <returns></returns>
-        private bool IsAutoRun()
-        {
-            var startupPath = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
-            Microsoft.Win32.RegistryKey local = Microsoft.Win32.Registry.LocalMachine;
-            Microsoft.Win32.RegistryKey run = local.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-            var registryName = "AutoRun_EveryDayBing";
-            return run.GetValue(registryName) != null;
-        }
-
-        private enum AutoRun
-        {
-            Open,Close,Toggle
-        }
-        #endregion
+        
 
         #region 以管理员身份重启程序
 
