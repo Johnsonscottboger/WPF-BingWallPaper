@@ -58,6 +58,7 @@ namespace 每日必应
             {
                 var selectedPath = folderDialog.SelectedPath;
                 this.ImagePath.Text = selectedPath;
+                this.ImagePath.ToolTip = selectedPath;
                 try
                 {
                     Config.SetValue("ImagePath",selectedPath);
@@ -84,6 +85,7 @@ namespace 每日必应
             }
             var imagePath = Config.GetValue("ImagePath");
             this.ImagePath.Text = imagePath;
+            this.ImagePath.ToolTip = imagePath;
         }
 
         #region 设置开机自启

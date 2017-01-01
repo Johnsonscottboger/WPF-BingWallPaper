@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:每日必应"
         mc:Ignorable="d"
-        Title="设置" Height="392" Width="300" WindowStartupLocation="CenterOwner" ShowInTaskbar="False" WindowStyle="ToolWindow">
+        Title="设置" Height="390" Width="320" MinHeight="390" MinWidth="320"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" WindowStyle="ToolWindow">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -28,9 +29,15 @@
                 Content="开机自启" Click="Setting_AutoRunToggle_Click"></Button>
         <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                FontSize="18" Content="图片保存路径"/>
-        <TextBox x:Name="ImagePath" Grid.Column="1" Grid.Row="1" Margin="5"
+        <Grid Grid.Column="1" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="35"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="ImagePath" Grid.Column="0" Margin="5,5,0,5"
                  FontSize="16" Text="BingDownloadDir"/>
-        <Button Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Width="35" Margin="5"
+            <Button Grid.Column="1" Margin="0,5,5,5"
                 Content="选择" Click="Button_Click"/>
+        </Grid>
     </Grid>
 </Window>
