@@ -10,7 +10,11 @@ using System.Threading.Tasks;
 
 namespace 每日必应 {
     public class GetImg {
-        public readonly string bingDownloadDir = Directory.GetCurrentDirectory() + "\\BingDownload";
+        public string bingDownloadDir
+        {
+            get { return Config.GetValue("ImagePath") ?? Directory.GetCurrentDirectory() + "\\BingDownload"; }
+            set { }
+        }
         private readonly string hostName = "http://cn.bing.com";
         private readonly string imgBaseApi = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx={0}&n=1&nc=1480678894463&pid=hp&scope=web&FORM=HDRSC1&video=1";
 

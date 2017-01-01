@@ -19,12 +19,18 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"
                FontSize="18" Content="设置开机自启"/>
         <Button x:Name="Setting_AutoRunToggle" Grid.Column="1" Grid.Row="0" Margin="5"
                 Content="开机自启" Click="Setting_AutoRunToggle_Click"></Button>
+        <Label Grid.Column="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+               FontSize="18" Content="图片保存路径"/>
+        <TextBox x:Name="ImagePath" Grid.Column="1" Grid.Row="1" Margin="5"
+                 FontSize="16" Text="BingDownloadDir"/>
+        <Button Grid.Column="1" Grid.Row="1" HorizontalAlignment="Right" Width="35" Margin="5"
+                Content="选择" Click="Button_Click"/>
     </Grid>
 </Window>

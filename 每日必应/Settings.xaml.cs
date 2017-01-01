@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -33,12 +34,44 @@ namespace 每日必应
             e.Cancel = true;
         }
 
+        /// <summary>
+        /// 设置开机自启
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Setting_AutoRunToggle_Click(Object sender,RoutedEventArgs e)
         {
             AutoRunMethod(AutoRun.Toggle);
             Init();
         }
 
+        /// <summary>
+        /// 设置图片保存路径
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click(Object sender,RoutedEventArgs e)
+        {
+            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+            folderDialog.Description = "请选择图片保存路径";
+            if(folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var selectedPath = folderDialog.SelectedPath;
+                this.ImagePath.Text = selectedPath;
+                try
+                {
+                    Config.SetValue("ImagePath",selectedPath);
+                }
+                catch(Exception ex)
+                {
+                    System.Windows.MessageBox.Show("保存失败：\n" + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
         private void Init()
         {
             if(IsAutoRun())
@@ -49,6 +82,8 @@ namespace 每日必应
             {
                 this.Setting_AutoRunToggle.Content = "设置";
             }
+            var imagePath = Config.GetValue("ImagePath");
+            this.ImagePath.Text = imagePath;
         }
 
         #region 设置开机自启
@@ -82,7 +117,7 @@ namespace 每日必应
                             run.DeleteValue(registryName,false);
                             if(IsAutoRun())
                             {
-                                MessageBox.Show("未成功删除注册表项");
+                                System.Windows.MessageBox.Show("未成功删除注册表项");
                             }
                         }
                         else
@@ -102,7 +137,7 @@ namespace 每日必应
             }
             catch(Exception ex)
             {
-                MessageBox.Show("设置失败：\n" + ex.Message);
+                System.Windows.MessageBox.Show("设置失败：\n" + ex.Message);
             }
         }
 
@@ -123,6 +158,10 @@ namespace 每日必应
         {
             Open, Close, Toggle
         }
+
+
         #endregion
+
+        
     }
 }

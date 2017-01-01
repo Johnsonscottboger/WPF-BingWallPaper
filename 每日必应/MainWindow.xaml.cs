@@ -22,6 +22,17 @@ namespace 每日必应 {
         public MainWindow() {
             getImg = new GetImg();
             InitializeComponent();
+
+            if(IsAdmin())
+            {
+                TitleFormat = "每日必应（管理员）| {0}";
+                settings = new Settings();
+            }
+            else
+            {
+                TitleFormat = "每日必应 | {0}";
+            }
+
         }
 
         /// <summary>
@@ -31,18 +42,6 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private async void Window_SourceInitialized(object sender,EventArgs e) {
             try {
-                if(IsAdmin())
-                {
-                    TitleFormat = "每日必应（管理员）| {0}";
-                    settings = new Settings();
-                    settings.ShowDialog();
-                    settings.Focus();
-                }
-                else
-                {
-                    TitleFormat = "每日必应 | {0}";
-                }
-
                 this.Title = string.Format(TitleFormat,"正在加载......");
                 await GetImageByDay(day,10000);
             }
@@ -52,6 +51,17 @@ namespace 每日必应 {
                 else
                     MessageBox.Show(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// 窗体加载完毕
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Loaded(Object sender,RoutedEventArgs e)
+        {
+            settings?.Show();
+            settings?.Focus();
         }
 
         /// <summary>
@@ -206,24 +216,26 @@ namespace 每日必应 {
         /// <param name="e"></param>
         private void SetAutoRun_Click(Object sender,RoutedEventArgs e)
         {
+            bool getAdmin = true;
             if(!IsAdmin())
             {
-                RestartAsAdmin();
+                getAdmin = RestartAsAdmin();
             }
-
-            if(settings==null)
-                settings = new Settings();
-            settings.ShowDialog();
+            if(getAdmin)
+            {
+                if(settings == null)
+                    settings = new Settings();
+                settings.Show();
+                settings.Focus();
+            }
         }
-
         
-
         #region 以管理员身份重启程序
 
         /// <summary>
         /// 以管理员身份重启程序
         /// </summary>
-        public void RestartAsAdmin()
+        public bool RestartAsAdmin()
         {
             var processStartInfo = new System.Diagnostics.ProcessStartInfo();
             processStartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "每日必应.exe";
@@ -233,10 +245,12 @@ namespace 每日必应 {
             {
                 System.Diagnostics.Process.Start(processStartInfo);
                 Environment.Exit(0);
+                return true;
             }
             catch(Exception ex)
             {
-                MessageBox.Show("以管理员重启失败：\n" + ex.Message);
+                return false;
+                //MessageBox.Show("以管理员重启失败：\n" + ex.Message);
             }
         }
 

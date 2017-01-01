@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:每日必应"
         mc:Ignorable="d"
         Title="每日必应" MinHeight="400" MinWidth="600" Width="768" Height="495"
-        Closing="Window_Closed" SourceInitialized="Window_SourceInitialized"
-        KeyUp="Window_KeyUp"
+        SourceInitialized="Window_SourceInitialized"
+        KeyUp="Window_KeyUp" Loaded="Window_Loaded"
         >
     <Grid>
         <Grid.RowDefinitions>
