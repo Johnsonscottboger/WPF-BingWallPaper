@@ -160,10 +160,6 @@ namespace 每日必应
         {
             Open, Close, Toggle
         }
-
-
         #endregion
-
-        
     }
 }

@@ -12,7 +12,7 @@ namespace 每日必应 {
     public class GetImg {
         public string bingDownloadDir
         {
-            get { return Config.GetValue("ImagePath") ?? Directory.GetCurrentDirectory() + "\\BingDownload"; }
+            get { return Config.GetValue("ImagePath") == "" ? Directory.GetCurrentDirectory() + "\\BingDownload" : Config.GetValue("ImagePath"); }
             set { }
         }
         private readonly string hostName = "http://cn.bing.com";
