@@ -156,7 +156,14 @@ namespace 每日必应 {
                 throw new ArgumentNullException(nameof(path));
             var success = SystemParametersInfo(20,0,path,0x01 | 0x02);
             if(!success)
-                throw new Exception("设置失败，请在 Windows 10 系统中使用，也可以尝试打开下载位置！");
+            {
+                var img = System.Drawing.Image.FromFile(path);
+                var bmpPath = path.Replace("jpg", "bmp");
+                img.Save(bmpPath, System.Drawing.Imaging.ImageFormat.Bmp);
+                success = SystemParametersInfo(20, 0, bmpPath, 0x02);
+                if (!success)
+                    throw new Exception("设置失败，请在 Windows 10 系统中使用，也可以尝试打开下载位置！");
+            }
         }
 
         /// <summary>
